@@ -1,0 +1,45 @@
+@model SportsAPP.Models.Comment
+
+@{
+    ViewData["Title"] = "Editează Comentariul";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h4 class="mb-0"><i class="bi bi-pencil"></i> Editează Comentariul</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-controller="Comments" asp-action="Edit" asp-route-id="@Model.Id">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="Id" value="@Model.Id" />
+                        <input type="hidden" name="Date" value="@Model.Date" />
+                        <input type="hidden" name="PostId" value="@Model.PostId" />
+                        <input type="hidden" name="UserId" value="@Model.UserId" />
+
+                        <div class="mb-3">
+                            <label for="Content" class="form-label">Conținut Comentariu <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="Content" name="Content" rows="4" required>@Model.Content</textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-check-circle"></i> Salvează Modificările
+                            </button>
+                            <a asp-controller="Posts" asp-action="Show" asp-route-id="@Model.PostId" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Anulează
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

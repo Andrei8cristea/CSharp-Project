@@ -1,0 +1,91 @@
+@model SportsAPP.Models.Post
+
+@{
+    ViewData["Title"] = "Adaugă Postare Nouă";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Adaugă Postare Nouă</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-controller="Posts" asp-action="Create" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label for="Title" class="form-label">Titlu <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="Title" name="Title" required />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Content" class="form-label">Conținut <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="Content" name="Content" rows="5" required></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="MediaType" class="form-label">Tipul Postării <span class="text-danger">*</span></label>
+                            <select class="form-select" id="MediaType" name="MediaType" required>
+                                <option value="0">Text</option>
+                                <option value="1">Imagine</option>
+                                <option value="2">Videoclip</option>
+                            </select>
+                            <span asp-validation-for="MediaType" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3" id="mediaFileDiv" style="display: none;">
+                            <label for="mediaFile" class="form-label">Încarcă Fișier Media</label>
+                            <input type="file" class="form-control" id="mediaFile" name="mediaFile" accept="image/*,video/*" />
+                            <small class="form-text text-muted">
+                                Pentru imagini: JPG, PNG, GIF. Pentru videoclipuri: MP4, AVI, MOV.
+                            </small>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Creează Postarea
+                            </button>
+                            <a asp-controller="Posts" asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Anulează
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Show/hide media file input based on media type selection
+        document.getElementById('MediaType').addEventListener('change', function() {
+            var mediaType = this.value;
+            var mediaFileDiv = document.getElementById('mediaFileDiv');
+            var mediaFileInput = document.getElementById('mediaFile');
+            
+            if (mediaType == '1' || mediaType == '2') {
+                // Image or Video selected
+                mediaFileDiv.style.display = 'block';
+                
+                if (mediaType == '1') {
+                    mediaFileInput.accept = 'image/*';
+                } else {
+                    mediaFileInput.accept = 'video/*';
+                }
+            } else {
+                // Text selected
+                mediaFileDiv.style.display = 'none';
+                mediaFileInput.value = '';
+            }
+        });
+    </script>
+}

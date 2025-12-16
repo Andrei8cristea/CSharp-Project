@@ -1,0 +1,106 @@
+@model IEnumerable<SportsAPP.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Căutare Utilizatori";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4">
+                <i class="bi bi-people"></i> Căutare Utilizatori
+            </h1>
+
+            <!-- Search Form -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" asp-controller="Users" asp-action="Index">
+                        <div class="input-group">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="searchString" 
+                                   value="@ViewData["CurrentFilter"]" 
+                                   placeholder="Caută după nume (ex: Ion Popescu sau doar Ion)..." />
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Caută
+                            </button>
+                            @if (!string.IsNullOrEmpty(ViewData["CurrentFilter"]?.ToString()))
+                            {
+                                <a asp-controller="Users" asp-action="Index" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Resetează
+                                </a>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results -->
+            @if (Model != null && Model.Any())
+            {
+                <div class="row">
+                    @foreach (var user in Model)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="text-center mb-3">
+                                        @if (!string.IsNullOrEmpty(user.ProfileImagePath))
+                                        {
+                                            <img src="@user.ProfileImagePath" 
+                                                 class="rounded-circle" 
+                                                 alt="@user.FullName" 
+                                                 style="width: 100px; height: 100px; object-fit: cover;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center text-white" 
+                                                 style="width: 100px; height: 100px; font-size: 2rem;">
+                                                @user.FirstName?.Substring(0, 1)@user.LastName?.Substring(0, 1)
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <h5 class="card-title text-center">@user.FullName</h5>
+                                    
+                                    @if (!string.IsNullOrEmpty(user.ProfileDescription))
+                                    {
+                                        <p class="card-text text-center text-muted small">
+                                            @(user.ProfileDescription.Length > 100 
+                                                ? user.ProfileDescription.Substring(0, 100) + "..." 
+                                                : user.ProfileDescription)
+                                        </p>
+                                    }
+
+                                    <div class="text-center">
+                                        <span class="badge @(user.IsPublic ? "bg-success" : "bg-warning")">
+                                            @(user.IsPublic ? "Public" : "Privat")
+                                        </span>
+                                    </div>
+
+                                    <div class="text-center mt-3">
+                                        <a asp-controller="Users" asp-action="Show" asp-route-id="@user.Id" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-eye"></i> Vezi Profil
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(ViewData["CurrentFilter"]?.ToString()))
+            {
+                <div class="alert alert-info">
+                    Nu s-au găsit utilizatori care să corespundă criteriilor de căutare.
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    Folosește formularul de mai sus pentru a căuta utilizatori.
+                </div>
+            }
+        </div>
+    </div>
+</div>
