@@ -1,0 +1,115 @@
+@model SportsAPP.Models.Post
+
+@{
+    ViewData["Title"] = "Editează Postarea";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h4 class="mb-0"><i class="bi bi-pencil"></i> Editează Postarea</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-controller="Posts" asp-action="Edit" asp-route-id="@Model.Id" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="Id" value="@Model.Id" />
+                        <input type="hidden" name="Date" value="@Model.Date" />
+                        <input type="hidden" name="UserId" value="@Model.UserId" />
+                        <input type="hidden" name="MediaPath" value="@Model.MediaPath" />
+
+                        <div class="mb-3">
+                            <label for="Title" class="form-label">Titlu <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="Title" name="Title" value="@Model.Title" required />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Content" class="form-label">Conținut <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="Content" name="Content" rows="5" required>@Model.Content</textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="MediaType" class="form-label">Tipul Postării <span class="text-danger">*</span></label>
+                            <select class="form-select" id="MediaType" name="MediaType" required>
+                                <option value="0" selected="@(Model.MediaType == MediaType.Text)">Text</option>
+                                <option value="1" selected="@(Model.MediaType == MediaType.Image)">Imagine</option>
+                                <option value="2" selected="@(Model.MediaType == MediaType.Video)">Videoclip</option>
+                            </select>
+                            <span asp-validation-for="MediaType" class="text-danger"></span>
+                        </div>
+
+                        @* Afisare media existent *@
+                        @if (!string.IsNullOrEmpty(Model.MediaPath))
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Media Curent:</label>
+                                @if (Model.MediaType == MediaType.Image)
+                                {
+                                    <div>
+                                        <img src="@Model.MediaPath" class="img-thumbnail" style="max-height: 200px;" alt="Current image" />
+                                    </div>
+                                }
+                                else if (Model.MediaType == MediaType.Video)
+                                {
+                                    <div>
+                                        <video controls style="max-height: 200px;">
+                                            <source src="@Model.MediaPath" type="video/mp4">
+                                        </video>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <div class="mb-3" id="mediaFileDiv" style="@(Model.MediaType != MediaType.Text ? "display: block;" : "display: none;")">
+                            <label for="mediaFile" class="form-label">Schimbă Fișierul Media (opțional)</label>
+                            <input type="file" class="form-control" id="mediaFile" name="mediaFile" accept="@(Model.MediaType == MediaType.Image ? "image/*" : "video/*")" />
+                            <small class="form-text text-muted">
+                                Lasă necompletat dacă vrei să păstrezi media-ul existent.
+                            </small>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-check-circle"></i> Salvează Modificările
+                            </button>
+                            <a asp-controller="Posts" asp-action="Show" asp-route-id="@Model.Id" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Anulează
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Show/hide media file input based on media type selection
+        document.getElementById('MediaType').addEventListener('change', function() {
+            var mediaType = this.value;
+            var mediaFileDiv = document.getElementById('mediaFileDiv');
+            var mediaFileInput = document.getElementById('mediaFile');
+            
+            if (mediaType == '1' || mediaType == '2') {
+                // Image or Video selected
+                mediaFileDiv.style.display = 'block';
+                
+                if (mediaType == '1') {
+                    mediaFileInput.accept = 'image/*';
+                } else {
+                    mediaFileInput.accept = 'video/*';
+                }
+            } else {
+                // Text selected
+                mediaFileDiv.style.display = 'none';
+                mediaFileInput.value = '';
+            }
+        });
+    </script>
+}

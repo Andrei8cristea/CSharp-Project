@@ -1,0 +1,98 @@
+@model IEnumerable<SportsAPP.Models.Follow>
+@inject UserManager<ApplicationUser> UserManager
+@inject SportsAPP.Data.ApplicationDbContext db
+
+@{
+    ViewData["Title"] = $"Urmărește - {ViewData["UserName"]}";
+    var currentUserId = UserManager.GetUserId(User);
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2 class="mb-4">
+                <i class="bi bi-person-heart"></i> Urmărește - @ViewData["UserName"]
+            </h2>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="list-group">
+                    @foreach (var follow in Model)
+                    {
+                        var following = follow.Following;
+                        var isFollowing = db.Follows.Any(f => f.FollowerId == currentUserId && f.FollowingId == following!.Id);
+                        var isOwnProfile = currentUserId == following!.Id;
+
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-center">
+                                        @if (!string.IsNullOrEmpty(following.ProfileImagePath))
+                                        {
+                                            <img src="@following.ProfileImagePath" 
+                                                 class="rounded-circle me-3" 
+                                                 style="width: 50px; height: 50px; object-fit: cover;" 
+                                                 alt="@following.FullName" />
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center text-white me-3" 
+                                                 style="width: 50px; height: 50px;">
+                                                @following.FirstName?.Substring(0, 1)@following.LastName?.Substring(0, 1)
+                                            </div>
+                                        }
+                                        
+                                        <div>
+                                            <h6 class="mb-0">
+                                                <a href="@Url.Action("Show", "Users", new { id = following.Id })" 
+                                                   class="text-decoration-none">
+                                                    @following.FullName
+                                                </a>
+                                            </h6>
+                                            @if (!string.IsNullOrEmpty(following.ProfileDescription))
+                                            {
+                                                <small class="text-muted">
+                                                    @(following.ProfileDescription.Length > 50 ? following.ProfileDescription.Substring(0, 50) + "..." : following.ProfileDescription)
+                                                </small>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 text-end">
+                                    @if (!isOwnProfile && User.Identity!.IsAuthenticated)
+                                    {
+                                        @if (isFollowing)
+                                        {
+                                            <form asp-controller="Follows" asp-action="Unfollow" asp-route-userId="@following.Id" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="bi bi-person-check"></i> Urmărești
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-controller="Follows" asp-action="Follow" asp-route-userId="@following.Id" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                    <i class="bi bi-person-plus"></i> Urmărește
+                                                </button>
+                                            </form>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Nu urmărește nimeni încă.
+                </div>
+            }
+        </div>
+    </div>
+</div>

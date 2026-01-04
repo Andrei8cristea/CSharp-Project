@@ -1,0 +1,319 @@
+@model IEnumerable<SportsAPP.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Căutare Utilizatori";
+    var currentFilter = ViewData["CurrentFilter"]?.ToString() ?? "";
+    var currentFilterType = ViewData["CurrentFilterType"]?.ToString() ?? "all";
+    var currentSortBy = ViewData["CurrentSortBy"]?.ToString() ?? "name";
+    var currentPage = (int)(ViewData["CurrentPage"] ?? 1);
+    var totalUsers = (int)(ViewData["TotalUsers"] ?? 0);
+    var totalPages = (int)(ViewData["TotalPages"] ?? 1);
+    var pageSize = (int)(ViewData["PageSize"] ?? 12);
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4">
+                <i class="bi bi-people"></i> Căutare Utilizatori
+            </h1>
+
+            <!-- Search Form -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" asp-controller="Users" asp-action="Index" id="searchForm">
+                        <!-- Main Search Input -->
+                        <div class="input-group mb-3">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="searchString" 
+                                   id="searchInput"
+                                   value="@currentFilter" 
+                                   placeholder="Caută după nume, email sau username..." />
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Caută
+                            </button>
+                            @if (!string.IsNullOrEmpty(currentFilter))
+                            {
+                                <a asp-controller="Users" asp-action="Index" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Resetează
+                                </a>
+                            }
+                        </div>
+
+                        <!-- Advanced Filters (Collapsible) -->
+                        <div class="accordion" id="filtersAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button @(currentFilterType != "all" || currentSortBy != "name" ? "" : "collapsed")" 
+                                            type="button" 
+                                            data-bs-toggle="collapse" 
+                                            data-bs-target="#filtersCollapse">
+                                        <i class="bi bi-funnel"></i> Filtre Avansate
+                                    </button>
+                                </h2>
+                                <div id="filtersCollapse" class="accordion-collapse collapse @(currentFilterType != "all" || currentSortBy != "name" ? "show" : "")">
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <!-- Profile Type Filter -->
+                                            <div class="col-md-6 mb-3">
+                                                <label for="filterType" class="form-label">
+                                                    <i class="bi bi-shield-check"></i> Tip Profil
+                                                </label>
+                                                <select class="form-select" name="filterType" id="filterType">
+                                                    <option value="all" selected="@(currentFilterType == "all")">Toate</option>
+                                                    <option value="public" selected="@(currentFilterType == "public")">Public</option>
+                                                    <option value="private" selected="@(currentFilterType == "private")">Privat</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Sort By -->
+                                            <div class="col-md-6 mb-3">
+                                                <label for="sortBy" class="form-label">
+                                                    <i class="bi bi-sort-down"></i> Sortare
+                                                </label>
+                                                <select class="form-select" name="sortBy" id="sortBy">
+                                                    <option value="name" selected="@(currentSortBy == "name")">Nume (A-Z)</option>
+                                                    <option value="newest" selected="@(currentSortBy == "newest")">Cei mai noi</option>
+                                                    <option value="posts" selected="@(currentSortBy == "posts")">Cele mai multe postări</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-end">
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                <i class="bi bi-check-circle"></i> Aplică Filtre
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden field for page (will be set by pagination) -->
+                        <input type="hidden" name="page" id="pageInput" value="@currentPage" />
+                    </form>
+                </div>
+            </div>
+
+            <!-- Search Results Statistics -->
+            @if (!string.IsNullOrEmpty(currentFilter) || currentFilterType != "all")
+            {
+                <div class="alert alert-info d-flex align-items-center mb-3">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <div>
+                        @if (totalUsers > 0)
+                        {
+                            <text>
+                                <strong>@totalUsers</strong> 
+                                @if (totalUsers == 1)
+                                {
+                                    <text>utilizator găsit</text>
+                                }
+                                else
+                                {
+                                    <text>utilizatori găsiți</text>
+                                }
+                            </text>
+                            @if (!string.IsNullOrEmpty(currentFilter))
+                            {
+                                <span> pentru "<strong>@currentFilter</strong>"</span>
+                            }
+                            @if (currentFilterType != "all")
+                            {
+                                <span> - Profil: <strong>@(currentFilterType == "public" ? "Public" : "Privat")</strong></span>
+                            }
+                        }
+                        else
+                        {
+                            <span>Nu s-au găsit utilizatori</span>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Results -->
+            @if (Model != null && Model.Any())
+            {
+                <div class="row">
+                    @foreach (var user in Model)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 user-card">
+                                <div class="card-body">
+                                    <div class="text-center mb-3">
+                                        @if (!string.IsNullOrEmpty(user.ProfileImagePath))
+                                        {
+                                            <img src="@user.ProfileImagePath" 
+                                                 class="rounded-circle" 
+                                                 alt="@user.FullName" 
+                                                 style="width: 100px; height: 100px; object-fit: cover;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center text-white" 
+                                                 style="width: 100px; height: 100px; font-size: 2rem;">
+                                                @user.FirstName?.Substring(0, 1)@user.LastName?.Substring(0, 1)
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <h5 class="card-title text-center">@user.FullName</h5>
+                                    
+                                    @if (!string.IsNullOrEmpty(user.ProfileDescription))
+                                    {
+                                        <p class="card-text text-center text-muted small">
+                                            @(user.ProfileDescription.Length > 100 
+                                                ? user.ProfileDescription.Substring(0, 100) + "..." 
+                                                : user.ProfileDescription)
+                                        </p>
+                                    }
+
+                                    <div class="text-center mb-2">
+                                        <span class="badge @(user.IsPublic ? "bg-success" : "bg-warning")">
+                                            @(user.IsPublic ? "Public" : "Privat")
+                                        </span>
+                                        <span class="badge bg-info">
+                                            <i class="bi bi-file-post"></i> @user.Posts.Count postări
+                                        </span>
+                                    </div>
+
+                                    <div class="text-center mt-3">
+                                        <a asp-controller="Users" asp-action="Show" asp-route-id="@user.Id" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-eye"></i> Vezi Profil
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Pagination -->
+                @if (totalPages > 1)
+                {
+                    <nav aria-label="User search pagination">
+                        <ul class="pagination justify-content-center">
+                            <!-- Previous Button -->
+                            <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                                <a class="page-link" 
+                                   href="@Url.Action("Index", new { searchString = currentFilter, filterType = currentFilterType, sortBy = currentSortBy, page = currentPage - 1 })"
+                                   aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+
+                            <!-- Page Numbers -->
+                            @{
+                                int startPage = Math.Max(1, currentPage - 2);
+                                int endPage = Math.Min(totalPages, currentPage + 2);
+                            }
+
+                            @if (startPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Index", new { searchString = currentFilter, filterType = currentFilterType, sortBy = currentSortBy, page = 1 })">1</a>
+                                </li>
+                                @if (startPage > 2)
+                                {
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                }
+                            }
+
+                            @for (int i = startPage; i <= endPage; i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", new { searchString = currentFilter, filterType = currentFilterType, sortBy = currentSortBy, page = i })">@i</a>
+                                </li>
+                            }
+
+                            @if (endPage < totalPages)
+                            {
+                                @if (endPage < totalPages - 1)
+                                {
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                }
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Index", new { searchString = currentFilter, filterType = currentFilterType, sortBy = currentSortBy, page = totalPages })">@totalPages</a>
+                                </li>
+                            }
+
+                            <!-- Next Button -->
+                            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                                <a class="page-link" 
+                                   href="@Url.Action("Index", new { searchString = currentFilter, filterType = currentFilterType, sortBy = currentSortBy, page = currentPage + 1 })"
+                                   aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            }
+            else if (!string.IsNullOrEmpty(currentFilter) || currentFilterType != "all")
+            {
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> Nu s-au găsit utilizatori care să corespundă criteriilor de căutare.
+                    <br />
+                    <small>Încercați să modificați termenii de căutare sau filtrele.</small>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Folosește formularul de mai sus pentru a căuta utilizatori.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-submit form when filters change (optional - can be removed if not desired)
+        document.getElementById('filterType')?.addEventListener('change', function() {
+            // Uncomment the line below to auto-submit on filter change
+            // document.getElementById('searchForm').submit();
+        });
+
+        document.getElementById('sortBy')?.addEventListener('change', function() {
+            // Uncomment the line below to auto-submit on sort change
+            // document.getElementById('searchForm').submit();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Escape key to clear search
+            if (e.key === 'Escape') {
+                var searchInput = document.getElementById('searchInput');
+                if (searchInput && searchInput.value) {
+                    window.location.href = '@Url.Action("Index", "Users")';
+                }
+            }
+        });
+
+        // Focus search input on page load
+        document.getElementById('searchInput')?.focus();
+    </script>
+}
+
+<style>
+    .user-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .user-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+    }
+</style>

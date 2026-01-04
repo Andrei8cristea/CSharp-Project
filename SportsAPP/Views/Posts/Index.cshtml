@@ -1,0 +1,277 @@
+@inject UserManager<ApplicationUser> UserManager
+@model IEnumerable<SportsAPP.Models.Post>
+
+@{
+    ViewData["Title"] = "Postări Sports";
+}
+
+<style>
+    .twitter-feed {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+    }
+    
+    .twitter-header {
+        border-bottom: 1px solid var(--gray-200);
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        padding: 1rem 1.25rem;
+    }
+    
+    .tweet-composer {
+        border-bottom: 8px solid var(--gray-100);
+        padding: 1rem 1.25rem;
+    }
+    
+    .tweet {
+        border-bottom: 1px solid var(--gray-200);
+        padding: 0.75rem 1rem;
+        transition: background-color 0.2s;
+    }
+    
+    .tweet:hover {
+        background-color: var(--gray-50);
+    }
+    
+    .tweet-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    
+    .tweet-avatar-placeholder {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .tweet-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .tweet-author {
+        font-weight: 700;
+        color: var(--gray-900);
+        font-size: 0.95rem;
+    }
+    
+    .tweet-author:hover {
+        text-decoration: underline;
+    }
+    
+    .tweet-time {
+        color: var(--gray-600);
+        font-size: 0.875rem;
+    }
+    
+    .tweet-badge {
+        font-size: 0.75rem;
+        padding: 0.125rem 0.5rem;
+        border-radius: 12px;
+        background: var(--gray-100);
+        color: var(--gray-700);
+    }
+    
+    .tweet-content {
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+        color: var(--gray-900);
+    }
+    
+    .tweet-title {
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+        color: var(--gray-900);
+    }
+    
+    .tweet-media {
+        margin-top: 0.75rem;
+        margin-bottom: 0.75rem;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--gray-200);
+    }
+    
+    .tweet-media img, .tweet-media video {
+        width: 100%;
+        display: block;
+    }
+    
+    .tweet-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        align-items: center;
+    }
+    
+    .tweet-action {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--gray-600);
+        font-size: 0.875rem;
+        padding: 0.375rem 0.5rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    
+    .tweet-action:hover {
+        color: var(--primary);
+        background: rgba(79, 70, 229, 0.1);
+    }
+    
+    .tweet-action.danger:hover {
+        color: var(--danger);
+        background: rgba(239, 68, 68, 0.1);
+    }
+    
+    .tweet-action.warning:hover {
+        color: var(--warning);
+        background: rgba(245, 158, 11, 0.1);
+    }
+    
+    .tweet-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--gray-600);
+        font-size: 0.875rem;
+    }
+</style>
+
+<div class="twitter-feed fade-in">
+    <!-- Header -->
+    <div class="twitter-header">
+        <h5 class="mb-0 fw-bold">Feed Postări</h5>
+    </div>
+
+    <!-- Tweet Composer -->
+    @if (User.IsInRole("User") || User.IsInRole("Admin"))
+    {
+        <div class="tweet-composer">
+            <a asp-controller="Posts" asp-action="New" class="btn btn-primary w-100">
+                <i class="bi bi-plus-circle me-2"></i>Postare Nouă
+            </a>
+        </div>
+    }
+
+    <!-- Alerts -->
+    @if (TempData.ContainsKey("message"))
+    {
+        <div class="mx-3 mt-3">
+            <div class="alert @(TempData.ContainsKey("messageType") ? TempData["messageType"] : "alert-success") alert-dismissible">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <i class="bi bi-check-circle me-2"></i>@TempData["message"]
+            </div>
+        </div>
+    }
+
+    <!-- Tweets/Posts -->
+    @if (Model.Any())
+    {
+        @foreach (var post in Model)
+        {
+            <div class="tweet">
+                <div class="d-flex gap-3">
+                    <!-- Avatar -->
+                    <div>
+                        @if (!string.IsNullOrEmpty(post.User?.ProfileImagePath))
+                        {
+                            <img src="@post.User.ProfileImagePath" class="tweet-avatar" alt="@post.User.FullName" />
+                        }
+                        else
+                        {
+                            <div class="tweet-avatar-placeholder">
+                                <i class="bi bi-person-fill text-white"></i>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-grow-1">
+                        <!-- Header -->
+                        <div class="tweet-header">
+                            <a asp-controller="Users" asp-action="Show" asp-route-id="@post.UserId" class="tweet-author text-decoration-none">
+                                @post.User?.FullName
+                            </a>
+                            <span class="tweet-time">· @post.Date.ToString("dd MMM")</span>
+                            <span class="tweet-badge">@post.MediaType</span>
+                        </div>
+
+                        <!-- Title & Content -->
+                        <div class="tweet-content">
+                            <div class="tweet-title">@post.Title</div>
+                            <div>@post.Content</div>
+                        </div>
+
+                        <!-- Media -->
+                        @if (!string.IsNullOrEmpty(post.MediaPath))
+                        {
+                            <div class="tweet-media">
+                                @if (post.MediaType == SportsAPP.Models.MediaType.Image)
+                                {
+                                    <img src="@post.MediaPath" alt="@post.Title" />
+                                }
+                                else if (post.MediaType == SportsAPP.Models.MediaType.Video)
+                                {
+                                    <video controls style="max-height: 500px;">
+                                        <source src="@post.MediaPath" type="video/mp4">
+                                        Browser-ul dvs. nu suportă video.
+                                    </video>
+                                }
+                            </div>
+                        }
+
+                        <!-- Actions -->
+                        <div class="tweet-actions">
+                            <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="tweet-action">
+                                <i class="bi bi-chat"></i>
+                                <span>@post.Comments.Count</span>
+                            </a>
+
+                            @if (User.IsInRole("Admin") || post.UserId == UserManager.GetUserId(User))
+                            {
+                                <a asp-controller="Posts" asp-action="Edit" asp-route-id="@post.Id" class="tweet-action warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                
+                                <form method="post" asp-controller="Posts" asp-action="Delete" asp-route-id="@post.Id" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="tweet-action danger border-0 bg-transparent" onclick="return confirm('Sigur doriți să ștergeți această postare?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-center py-5 px-3">
+            <div class="mb-3">
+                <i class="bi bi-inbox" style="font-size: 4rem; opacity: 0.3;"></i>
+            </div>
+            <h5>Nu există postări încă</h5>
+            <p class="text-muted">Fii primul care adaugă o postare!</p>
+        </div>
+    }
+</div>

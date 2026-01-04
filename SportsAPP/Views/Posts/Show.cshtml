@@ -1,0 +1,155 @@
+@inject UserManager<ApplicationUser> UserManager
+@model SportsAPP.Models.Post
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <!-- Post Header -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-0">@Model.Title</h4>
+                            <small>
+                                Postat de <strong>@Model.User?.FullName</strong> 
+                                • @Model.Date.ToString("dd MMM yyyy, HH:mm")
+                            </small>
+                        </div>
+                        <span class="badge bg-light text-dark">@Model.MediaType</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="lead">@Model.Content</p>
+
+                    @* Afisare media daca exista *@
+                    @if (!string.IsNullOrEmpty(Model.MediaPath))
+                    {
+                        @if (Model.MediaType == SportsAPP.Models.MediaType.Image)
+                        {
+                            <img src="@Model.MediaPath" class="img-fluid rounded mb-3" alt="Post image" />
+                        }
+                        else if (Model.MediaType == SportsAPP.Models.MediaType.Video)
+                        {
+                            <video controls class="w-100 rounded mb-3">
+                                <source src="@Model.MediaPath" type="video/mp4">
+                                Browser-ul dvs. nu suportă video.
+                            </video>
+                        }
+                    }
+
+                    <hr />
+
+                    @if (User.IsInRole("Admin") || Model.UserId == UserManager.GetUserId(User))
+                    {
+                        <div class="mb-3">
+                            <a asp-controller="Posts" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                                <i class="bi bi-pencil"></i> Editează Postarea
+                            </a>
+                            <form method="post" asp-controller="Posts" asp-action="Delete" asp-route-id="@Model.Id" style="display: inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Sigur doriți să ștergeți această postare?')">
+                                    <i class="bi bi-trash"></i> Șterge Postarea
+                                </button>
+                            </form>
+                        </div>
+                    }
+
+                    <a asp-controller="Posts" asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Înapoi la listă
+                    </a>
+                </div>
+            </div>
+
+            @if (TempData.ContainsKey("message"))
+            {
+                <div class="alert @(TempData.ContainsKey("messageType") ? TempData["messageType"] : "alert-success") alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    @TempData["message"]
+                </div>
+            }
+
+            <!-- Comments Section -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-chat-dots"></i> 
+                        Comentarii (@Model.Comments.Count)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <!-- Add Comment Form -->
+                        <div class="mb-4 p-3 bg-light rounded">
+                            <h6>Adaugă un comentariu:</h6>
+                            <form method="post" asp-controller="Comments" asp-action="Create">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="PostId" value="@Model.Id" />
+                                <div class="mb-3">
+                                    <textarea name="Content" class="form-control" rows="3" placeholder="Scrie comentariul tău aici..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send"></i> Trimite Comentariu
+                                </button>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            Pentru a comenta, trebuie să fii <a asp-area="Identity" asp-page="/Account/Login">autentificat</a>.
+                        </div>
+                    }
+
+                    <!-- Display Comments -->
+                    @if (Model.Comments.Any())
+                    {
+                        <div class="comments-list">
+                            @foreach (var comment in Model.Comments.OrderByDescending(c => c.Date))
+                            {
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1">
+                                                    @comment.User?.FullName
+                                                    <small class="text-muted">• @comment.Date.ToString("dd MMM yyyy, HH:mm")</small>
+                                                </h6>
+                                                <p class="mb-2">@comment.Content</p>
+                                            </div>
+
+                                            @if (User.IsInRole("Admin") || comment.UserId == UserManager.GetUserId(User))
+                                            {
+                                                <div class="ms-2">
+                                                    <a asp-controller="Comments" asp-action="Edit" asp-route-id="@comment.Id" class="btn btn-sm btn-outline-warning">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <form method="post" asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id" style="display: inline;">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Sigur doriți să ștergeți acest comentariu?')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Nu există comentarii încă. Fii primul care comentează!</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
