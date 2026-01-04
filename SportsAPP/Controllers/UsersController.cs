@@ -25,70 +25,23 @@ namespace SportsAPP.Controllers
         }
 
         // GET: Users/Index
-        // Enhanced search with filters, sorting, and pagination
-        public async Task<IActionResult> Index(
-            string searchString,
-            string filterType = "all",
-            string sortBy = "name",
-            int page = 1)
+        // Cautare utilizatori dupa nume (partial sau complet)
+        public async Task<IActionResult> Index(string searchString)
         {
-            const int pageSize = 12;
-
-            // Store current search parameters for the view
             ViewData["CurrentFilter"] = searchString;
-            ViewData["CurrentFilterType"] = filterType;
-            ViewData["CurrentSortBy"] = sortBy;
-            ViewData["CurrentPage"] = page;
 
-            // Start with all users and include Posts for counting
-            var users = db.ApplicationUsers
-                .Include(u => u.Posts)
-                .AsNoTracking()
-                .AsQueryable();
+            var users = from u in db.ApplicationUsers
+                        select u;
 
-            // Apply search filter (case-insensitive)
             if (!string.IsNullOrEmpty(searchString))
             {
-                var searchLower = searchString.ToLower();
-                users = users.Where(u =>
-                    (u.FirstName != null && u.FirstName.ToLower().Contains(searchLower)) ||
-                    (u.LastName != null && u.LastName.ToLower().Contains(searchLower)) ||
-                    (u.Email != null && u.Email.ToLower().Contains(searchLower)) ||
-                    (u.UserName != null && u.UserName.ToLower().Contains(searchLower)));
+                users = users.Where(u => 
+                    (u.FirstName + " " + u.LastName).Contains(searchString) ||
+                    u.FirstName!.Contains(searchString) ||
+                    u.LastName!.Contains(searchString));
             }
 
-            // Apply profile type filter
-            if (filterType == "public")
-            {
-                users = users.Where(u => u.IsPublic == true);
-            }
-            else if (filterType == "private")
-            {
-                users = users.Where(u => u.IsPublic == false);
-            }
-            // "all" - no filter needed
-
-            // Apply sorting
-            users = sortBy switch
-            {
-                "newest" => users.OrderByDescending(u => u.Id),
-                "posts" => users.OrderByDescending(u => u.Posts.Count),
-                _ => users.OrderBy(u => u.FirstName).ThenBy(u => u.LastName)
-            };
-
-            // Get total count before pagination
-            var totalUsers = await users.CountAsync();
-            ViewData["TotalUsers"] = totalUsers;
-            ViewData["TotalPages"] = (int)Math.Ceiling(totalUsers / (double)pageSize);
-            ViewData["PageSize"] = pageSize;
-
-            // Apply pagination
-            var paginatedUsers = await users
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return View(paginatedUsers);
+            return View(await users.ToListAsync());
         }
 
         // GET: Users/Show/id

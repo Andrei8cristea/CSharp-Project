@@ -273,67 +273,6 @@ namespace SportsAPP.Data.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("SportsAPP.Models.Follow", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("FollowedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FollowerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FollowingId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FollowingId");
-
-                    b.HasIndex("FollowerId", "FollowingId")
-                        .IsUnique();
-
-                    b.ToTable("Follows");
-                });
-
-            modelBuilder.Entity("SportsAPP.Models.FollowRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("RequestedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SenderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId", "ReceiverId", "Status")
-                        .IsUnique();
-
-                    b.ToTable("FollowRequests");
-                });
-
             modelBuilder.Entity("SportsAPP.Models.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -439,44 +378,6 @@ namespace SportsAPP.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SportsAPP.Models.Follow", b =>
-                {
-                    b.HasOne("SportsAPP.Models.ApplicationUser", "Follower")
-                        .WithMany("Following")
-                        .HasForeignKey("FollowerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("SportsAPP.Models.ApplicationUser", "Following")
-                        .WithMany("Followers")
-                        .HasForeignKey("FollowingId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Follower");
-
-                    b.Navigation("Following");
-                });
-
-            modelBuilder.Entity("SportsAPP.Models.FollowRequest", b =>
-                {
-                    b.HasOne("SportsAPP.Models.ApplicationUser", "Receiver")
-                        .WithMany("ReceivedFollowRequests")
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("SportsAPP.Models.ApplicationUser", "Sender")
-                        .WithMany("SentFollowRequests")
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
-                });
-
             modelBuilder.Entity("SportsAPP.Models.Post", b =>
                 {
                     b.HasOne("SportsAPP.Models.ApplicationUser", "User")
@@ -490,15 +391,7 @@ namespace SportsAPP.Data.Migrations
                 {
                     b.Navigation("Comments");
 
-                    b.Navigation("Followers");
-
-                    b.Navigation("Following");
-
                     b.Navigation("Posts");
-
-                    b.Navigation("ReceivedFollowRequests");
-
-                    b.Navigation("SentFollowRequests");
                 });
 
             modelBuilder.Entity("SportsAPP.Models.Post", b =>

@@ -1,24 +1,11 @@
 @inject UserManager<ApplicationUser> UserManager
 @model SportsAPP.Models.ApplicationUser
 
-@inject SportsAPP.Data.ApplicationDbContext db
 @{
     ViewData["Title"] = Model.FullName;
     var currentUserId = UserManager.GetUserId(User);
     var isOwnProfile = currentUserId == Model.Id;
     var canViewFull = Model.IsPublic || isOwnProfile || User.IsInRole("Admin");
-    
-    // Check follow status
-    var isFollowing = false;
-    var hasPendingRequest = false;
-    var followsCurrentUser = false;
-    
-    if (!isOwnProfile && currentUserId != null)
-    {
-        isFollowing = db.Follows.Any(f => f.FollowerId == currentUserId && f.FollowingId == Model.Id);
-        hasPendingRequest = db.FollowRequests.Any(fr => fr.SenderId == currentUserId && fr.ReceiverId == Model.Id && fr.Status == SportsAPP.Models.FollowRequestStatus.Pending);
-        followsCurrentUser = db.Follows.Any(f => f.FollowerId == Model.Id && f.FollowingId == currentUserId);
-    }
 }
 
 <div class="container mt-4">
@@ -81,18 +68,6 @@
                                         <strong class="fs-5">@Model.Posts.Count</strong>
                                         <span class="text-muted">postări</span>
                                     </div>
-                                    <div>
-                                        <a href="@Url.Action("Followers", "Follows", new { id = Model.Id })" class="text-decoration-none text-dark">
-                                            <strong class="fs-5">@Model.FollowersCount</strong>
-                                            <span class="text-muted">urmăritori</span>
-                                        </a>
-                                    </div>
-                                    <div>
-                                        <a href="@Url.Action("Following", "Follows", new { id = Model.Id })" class="text-decoration-none text-dark">
-                                            <strong class="fs-5">@Model.FollowingCount</strong>
-                                            <span class="text-muted">urmărește</span>
-                                        </a>
-                                    </div>
                                 </div>
                             }
 
@@ -108,54 +83,12 @@
                                         <i class="bi bi-plus-circle"></i> Postare Nouă
                                     </a>
                                 }
-                                else if (User.Identity!.IsAuthenticated)
+                                else if (User.IsInRole("Admin"))
                                 {
-                                    @if (isFollowing)
-                                    {
-                                        <!-- Following Button -->
-                                        <form asp-controller="Follows" asp-action="Unfollow" asp-route-userId="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Sigur vrei să nu mai urmărești pe @Model.FullName?');">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-outline-secondary">
-                                                <i class="bi bi-person-check"></i> Urmărești
-                                            </button>
-                                        </form>
-                                    }
-                                    else if (hasPendingRequest)
-                                    {
-                                        <!-- Requested Button -->
-                                        <form asp-controller="Follows" asp-action="CancelRequest" asp-route-userId="@Model.Id" method="post" class="d-inline">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-outline-warning">
-                                                <i class="bi bi-hourglass-split"></i> Cerere Trimisă
-                                            </button>
-                                        </form>
-                                    }
-                                    else
-                                    {
-                                        <!-- Follow Button -->
-                                        <form asp-controller="Follows" asp-action="Follow" asp-route-userId="@Model.Id" method="post" class="d-inline">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="bi bi-person-plus"></i> 
-                                                @if (followsCurrentUser)
-                                                {
-                                                    <text>Urmărește Înapoi</text>
-                                                }
-                                                else
-                                                {
-                                                    <text>Urmărește</text>
-                                                }
-                                            </button>
-                                        </form>
-                                    }
-                                    
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <a asp-controller="Users" asp-action="Edit" asp-route-id="@Model.Id" 
-                                           class="btn btn-warning">
-                                            <i class="bi bi-shield"></i> Admin
-                                        </a>
-                                    }
+                                    <a asp-controller="Users" asp-action="Edit" asp-route-id="@Model.Id" 
+                                       class="btn btn-warning">
+                                        <i class="bi bi-shield"></i> Editează (Admin)
+                                    </a>
                                 }
                             </div>
                         </div>

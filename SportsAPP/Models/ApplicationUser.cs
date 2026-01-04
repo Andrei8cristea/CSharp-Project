@@ -34,29 +34,6 @@ namespace SportsAPP.Models
         // Un user poate posta mai multe comentarii
         public virtual ICollection<Comment> Comments { get; set; } = [];
 
-        // Follow relationships
-        // People following this user (this user's followers)
-        public virtual ICollection<Follow> Followers { get; set; } = [];
-        
-        // People this user follows (this user is following them)
-        public virtual ICollection<Follow> Following { get; set; } = [];
-
-        // Follow requests sent by this user
-        public virtual ICollection<FollowRequest> SentFollowRequests { get; set; } = [];
-        
-        // Follow requests received by this user
-        public virtual ICollection<FollowRequest> ReceivedFollowRequests { get; set; } = [];
-
-        // Computed properties for counts
-        [NotMapped]
-        public int FollowersCount => Followers?.Count ?? 0;
-
-        [NotMapped]
-        public int FollowingCount => Following?.Count ?? 0;
-
-        [NotMapped]
-        public int PendingRequestsCount => ReceivedFollowRequests?.Count(r => r.Status == FollowRequestStatus.Pending) ?? 0;
-
         // Pentru popularea unui dropdown list cu roluri
         [NotMapped]
         public IEnumerable<SelectListItem>? AllRoles { get; set; }
