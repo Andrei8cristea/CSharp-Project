@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportsAPP.Data;
 using SportsAPP.Models;
+using SportsAPP.Services;
 
 namespace SportsAPP.Controllers
 {
@@ -11,13 +12,19 @@ namespace SportsAPP.Controllers
     {
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IContentModerationService _moderationService;
+        private readonly IRateLimitService _rateLimitService;
 
         public CommentsController(
             ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IContentModerationService moderationService,
+            IRateLimitService rateLimitService)
         {
             db = context;
             _userManager = userManager;
+            _moderationService = moderationService;
+            _rateLimitService = rateLimitService;
         }
 
         // POST: Comments/Create
@@ -28,12 +35,34 @@ namespace SportsAPP.Controllers
         {
             if (ModelState.IsValid)
             {
+                var userId = _userManager.GetUserId(User)!;
+
+                // Check rate limit
+                if (!await _rateLimitService.IsAllowedAsync(userId, RateLimitType.Comment))
+                {
+                    var remaining = _rateLimitService.GetRemainingCount(userId, RateLimitType.Comment);
+                    TempData["message"] = "Ai atins limita de comentarii! Poți comenta din nou peste câteva minute.";
+                    TempData["messageType"] = "alert-warning";
+                    return RedirectToAction("Show", "Posts", new { id = comment.PostId });
+                }
+
+                // Check content moderation
+                var moderationResult = await _moderationService.ModerateAsync(comment.Content ?? "");
+                
+                if (!moderationResult.IsApproved)
+                {
+                    TempData["message"] = $"Comentariul a fost blocat: {moderationResult.Reason}";
+                    TempData["messageType"] = "alert-danger";
+                    return RedirectToAction("Show", "Posts", new { id = comment.PostId });
+                }
+
                 comment.Date = DateTime.Now;
-                comment.UserId = _userManager.GetUserId(User);
+                comment.UserId = userId;
 
                 db.Add(comment);
                 await db.SaveChangesAsync();
                 TempData["message"] = "Comentariul a fost adăugat cu succes!";
+                TempData["messageType"] = "alert-success";
                 
                 return RedirectToAction("Show", "Posts", new { id = comment.PostId });
             }
@@ -92,11 +121,22 @@ namespace SportsAPP.Controllers
 
             if (ModelState.IsValid)
             {
+                // Check content moderation for edited content
+                var moderationResult = await _moderationService.ModerateAsync(comment.Content ?? "");
+                
+                if (!moderationResult.IsApproved)
+                {
+                    TempData["message"] = $"Modificarea a fost blocată: {moderationResult.Reason}";
+                    TempData["messageType"] = "alert-danger";
+                    return View(comment);
+                }
+
                 try
                 {
                     db.Update(comment);
                     await db.SaveChangesAsync();
                     TempData["message"] = "Comentariul a fost modificat cu succes!";
+                    TempData["messageType"] = "alert-success";
                 }
                 catch (DbUpdateConcurrencyException)
                 {

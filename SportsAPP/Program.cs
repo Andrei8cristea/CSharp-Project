@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SportsAPP.Data;
 using SportsAPP.Models;
+using SportsAPP.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,15 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Add Memory Cache for rate limiting
+builder.Services.AddMemoryCache();
+
+// Register content moderation and rate limiting services
+builder.Services.AddHttpClient<GroqApiClient>();
+builder.Services.AddScoped<IContentModerationService, ContentModerationService>();
+builder.Services.AddSingleton<IRateLimitService, RateLimitService>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

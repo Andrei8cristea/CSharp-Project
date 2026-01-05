@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportsAPP.Data;
 using SportsAPP.Models;
+using SportsAPP.Services;
 
 namespace SportsAPP.Controllers
 {
@@ -12,26 +13,67 @@ namespace SportsAPP.Controllers
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IWebHostEnvironment _env;
+        private readonly IContentModerationService _moderationService;
+        private readonly IRateLimitService _rateLimitService;
 
         public PostsController(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
-            IWebHostEnvironment env)
+            IWebHostEnvironment env,
+            IContentModerationService moderationService,
+            IRateLimitService rateLimitService)
         {
             db = context;
             _userManager = userManager;
             _env = env;
+            _moderationService = moderationService;
+            _rateLimitService = rateLimitService;
         }
 
         // GET: Posts
-        // Afisare toate postările, ordonate descrescător după dată
+        // Feed personalizat - postările de la persoanele urmarite + propriile postări
         public async Task<IActionResult> Index()
         {
+            var currentUserId = _userManager.GetUserId(User);
+
+            if (currentUserId == null)
+            {
+                // If user is not authenticated, show only posts from public accounts
+                var allPosts = await db.Posts
+                    .Include(p => p.User)
+                    .Include(p => p.Comments)
+                    .Include(p => p.Likes)
+                    .Where(p => p.User!.IsPublic) // Only public accounts
+                    .OrderByDescending(p => p.Date)
+                    .ToListAsync();
+
+                return View(allPosts);
+            }
+
+            // Get IDs of users that current user is following
+            var followingIds = await db.Follows
+                .Where(f => f.FollowerId == currentUserId)
+                .Select(f => f.FollowingId)
+                .ToListAsync();
+
+            // Get posts with privacy filtering:
+            // 1. Own posts (always visible)
+            // 2. Posts from followed users (regardless of privacy setting)
+            // 3. Posts from public accounts that the user doesn't follow
             var posts = await db.Posts
                 .Include(p => p.User)
                 .Include(p => p.Comments)
+                .Include(p => p.Likes)
+                .Where(p => 
+                    p.UserId == currentUserId || // Own posts
+                    followingIds.Contains(p.UserId!) || // Posts from followed users
+                    p.User!.IsPublic) // Posts from public accounts
                 .OrderByDescending(p => p.Date)
                 .ToListAsync();
+
+            // Pass info to view for empty state message
+            ViewBag.IsFollowingAnyone = followingIds.Any();
+            ViewBag.HasOwnPosts = posts.Any(p => p.UserId == currentUserId);
 
             return View(posts);
         }
@@ -49,11 +91,51 @@ namespace SportsAPP.Controllers
                 .Include(p => p.User)
                 .Include(p => p.Comments)
                     .ThenInclude(c => c.User)
+                .Include(p => p.Likes)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (post == null)
             {
                 return NotFound();
+            }
+
+            var currentUserId = _userManager.GetUserId(User);
+
+            // Privacy check: if the post author has a private account
+            if (!post.User!.IsPublic)
+            {
+                // Allow if:
+                // 1. Not authenticated -> redirect to login
+                // 2. Owner can always see their own posts
+                // 3. Followers can see posts
+                // 4. Admins can see all posts
+
+                if (currentUserId == null)
+                {
+                    TempData["message"] = "Trebuie să fii autentificat pentru a vedea această postare.";
+                    TempData["messageType"] = "alert-warning";
+                    return RedirectToAction("Index");
+                }
+
+                if (post.UserId != currentUserId && !User.IsInRole("Admin"))
+                {
+                    // Check if current user follows the post author
+                    var isFollowing = await db.Follows
+                        .AnyAsync(f => f.FollowerId == currentUserId && f.FollowingId == post.UserId);
+
+                    if (!isFollowing)
+                    {
+                        TempData["message"] = "Acest utilizator are contul privat. Trebuie să îl urmărești pentru a vedea postările.";
+                        TempData["messageType"] = "alert-warning";
+                        return RedirectToAction("Index");
+                    }
+                }
+            }
+
+            // Check if current user liked this post
+            if (currentUserId != null)
+            {
+                ViewBag.HasLiked = post.Likes.Any(l => l.UserId == currentUserId);
             }
 
             return View(post);
@@ -74,8 +156,30 @@ namespace SportsAPP.Controllers
         {
             if (ModelState.IsValid)
             {
+                var userId = _userManager.GetUserId(User)!;
+
+                // Check rate limit
+                if (!await _rateLimitService.IsAllowedAsync(userId, RateLimitType.Post))
+                {
+                    var remaining = _rateLimitService.GetRemainingCount(userId, RateLimitType.Post);
+                    TempData["message"] = "Ai atins limita de postări! Poți posta din nou peste câteva minute.";
+                    TempData["messageType"] = "alert-warning";
+                    return View("New", post);
+                }
+
+                // Check content moderation
+                var contentToModerate = $"{post.Title} {post.Content}";
+                var moderationResult = await _moderationService.ModerateAsync(contentToModerate);
+                
+                if (!moderationResult.IsApproved)
+                {
+                    TempData["message"] = $"Postarea a fost blocată: {moderationResult.Reason}";
+                    TempData["messageType"] = "alert-danger";
+                    return View("New", post);
+                }
+
                 post.Date = DateTime.Now;
-                post.UserId = _userManager.GetUserId(User);
+                post.UserId = userId;
 
                 // Upload media file daca exista
                 if (mediaFile != null && mediaFile.Length > 0)
@@ -109,6 +213,7 @@ namespace SportsAPP.Controllers
                 db.Add(post);
                 await db.SaveChangesAsync();
                 TempData["message"] = "Postarea a fost adăugată cu succes!";
+                TempData["messageType"] = "alert-success";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -163,6 +268,17 @@ namespace SportsAPP.Controllers
 
             if (ModelState.IsValid)
             {
+                // Check content moderation for edited content
+                var contentToModerate = $"{post.Title} {post.Content}";
+                var moderationResult = await _moderationService.ModerateAsync(contentToModerate);
+                
+                if (!moderationResult.IsApproved)
+                {
+                    TempData["message"] = $"Modificarea a fost blocată: {moderationResult.Reason}";
+                    TempData["messageType"] = "alert-danger";
+                    return View(post);
+                }
+
                 try
                 {
                     // Upload nou fisier media daca exista
@@ -201,6 +317,7 @@ namespace SportsAPP.Controllers
                     db.Update(post);
                     await db.SaveChangesAsync();
                     TempData["message"] = "Postarea a fost modificată cu succes!";
+                    TempData["messageType"] = "alert-success";
                 }
                 catch (DbUpdateConcurrencyException)
                 {

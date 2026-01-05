@@ -1,0 +1,79 @@
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options directory
+.vs/
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# User secrets and sensitive configuration
+**/appsettings.Development.json
+**/appsettings.Production.json
+secrets.json
+*.secret
+
+# Environment variables
+.env
+.env.local
+
+# Database files
+*.mdf
+*.ldf
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+
+# Web workbench (sass)
+.sass-cache/
+
+# Others
+*.cache
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Node modules (if using frontend tooling)
+node_modules/
+dist/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini

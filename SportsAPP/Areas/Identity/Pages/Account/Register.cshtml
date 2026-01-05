@@ -17,8 +17,34 @@
                         <p class="text-muted">Alătură-te comunității Sports Social Platform</p>
                     </div>
 
-                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.FirstName" class="form-control" autocomplete="given-name" aria-required="true" placeholder="Ion" />
+                            <label asp-for="Input.FirstName"><i class="bi bi-person me-2"></i>Prenume</label>
+                            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.LastName" class="form-control" autocomplete="family-name" aria-required="true" placeholder="Popescu" />
+                            <label asp-for="Input.LastName"><i class="bi bi-person-fill me-2"></i>Nume</label>
+                            <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.ProfileDescription" class="form-label"><i class="bi bi-chat-text me-2"></i>Descriere Profil <span class="text-danger">*</span></label>
+                            <textarea asp-for="Input.ProfileDescription" class="form-control" rows="3" aria-required="true" placeholder="Spune-ne ceva despre tine..."></textarea>
+                            <span asp-validation-for="Input.ProfileDescription" class="text-danger"></span>
+                            <small class="form-text text-muted">Maximum 500 caractere</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Input.ProfileImage" class="form-label"><i class="bi bi-image me-2"></i>Poză Profil <span class="text-danger">*</span></label>
+                            <input asp-for="Input.ProfileImage" class="form-control" type="file" accept="image/*" aria-required="true" />
+                            <span asp-validation-for="Input.ProfileImage" class="text-danger"></span>
+                            <small class="form-text text-muted">Alege o imagine pentru profilul tău</small>
+                        </div>
                         
                         <div class="form-floating mb-3">
                             <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />

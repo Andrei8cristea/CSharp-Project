@@ -30,13 +30,15 @@ namespace SportsAPP.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IWebHostEnvironment _env;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IWebHostEnvironment env)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +46,7 @@ namespace SportsAPP.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _env = env;
         }
 
         [BindProperty]
@@ -55,6 +58,25 @@ namespace SportsAPP.Areas.Identity.Pages.Account
 
         public class InputModel
         {
+            [Required(ErrorMessage = "Prenumele este obligatoriu")]
+            [StringLength(50, ErrorMessage = "Prenumele nu poate avea mai mult de 50 de caractere")]
+            [Display(Name = "Prenume")]
+            public string FirstName { get; set; }
+
+            [Required(ErrorMessage = "Numele este obligatoriu")]
+            [StringLength(50, ErrorMessage = "Numele nu poate avea mai mult de 50 de caractere")]
+            [Display(Name = "Nume")]
+            public string LastName { get; set; }
+
+            [Required(ErrorMessage = "Descrierea profilului este obligatorie")]
+            [StringLength(500, ErrorMessage = "Descrierea nu poate avea mai mult de 500 de caractere")]
+            [Display(Name = "Descriere Profil")]
+            public string ProfileDescription { get; set; }
+
+            [Required(ErrorMessage = "Poza de profil este obligatorie")]
+            [Display(Name = "Poză Profil")]
+            public IFormFile ProfileImage { get; set; }
+
             [Required(ErrorMessage = "Email-ul este obligatoriu")]
             [EmailAddress(ErrorMessage = "Email-ul nu este valid")]
             [Display(Name = "Email")]
@@ -86,6 +108,32 @@ namespace SportsAPP.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
+
+                // Set profile information
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
+                user.ProfileDescription = Input.ProfileDescription;
+
+                // Handle profile image upload
+                if (Input.ProfileImage != null && Input.ProfileImage.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "profiles");
+                    
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(Input.ProfileImage.FileName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await Input.ProfileImage.CopyToAsync(stream);
+                    }
+
+                    user.ProfileImagePath = $"/uploads/profiles/{fileName}";
+                }
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);

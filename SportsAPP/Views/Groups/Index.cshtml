@@ -1,0 +1,133 @@
+@{
+    ViewData["Title"] = "Grupuri";
+    var availableGroups = ViewBag.AvailableGroups as List<SportsAPP.Models.Group>;
+    var userGroups = ViewBag.UserGroups as List<SportsAPP.Models.Group>;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-people-fill me-2"></i>Grupuri</h2>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Creează Grup
+        </a>
+    </div>
+
+    @if (TempData.ContainsKey("message"))
+    {
+        <div class="alert @(TempData.ContainsKey("messageType") ? TempData["messageType"] : "alert-success") alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            @TempData["message"]
+        </div>
+    }
+
+    <div class="row">
+        <!-- Left Column - Available Groups -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-search me-2"></i>Grupuri Disponibile</h5>
+                </div>
+                <div class="card-body" style="max-height: 800px; overflow-y: auto;">
+                    @if (availableGroups != null && availableGroups.Any())
+                    {
+                        @foreach (var group in availableGroups)
+                        {
+                            <div class="card mb-3 shadow-sm">
+                                @if (!string.IsNullOrEmpty(group.ImagePath))
+                                {
+                                    <img src="@group.ImagePath" class="card-img-top" alt="@group.Name" style="height: 150px; object-fit: cover;">
+                                }
+                                else
+                                {
+                                    <div class="card-img-top bg-primary bg-gradient d-flex align-items-center justify-content-center" style="height: 150px;">
+                                        <i class="bi bi-people-fill text-white" style="font-size: 3rem;"></i>
+                                    </div>
+                                }
+                                <div class="card-body">
+                                    <h5 class="card-title">@group.Name</h5>
+                                    <p class="card-text text-muted small">@group.Description</p>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <small class="text-muted">
+                                            <i class="bi bi-person-badge me-1"></i>
+                                            @group.Moderator?.FullName
+                                        </small>
+                                        <span class="badge bg-secondary">
+                                            @group.Members.Count membri
+                                        </span>
+                                    </div>
+                                    <a asp-action="Show" asp-route-id="@group.Id" class="btn btn-outline-primary w-100">
+                                        <i class="bi bi-eye me-1"></i> Vezi Grup
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <h5 class="mt-3">Nu există grupuri disponibile</h5>
+                            <p class="text-muted">Toate grupurile sunt vizitate sau creează unul nou!</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - User's Groups -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-people me-2"></i>Grupurile Mele</h5>
+                </div>
+                <div class="card-body" style="max-height: 800px; overflow-y: auto;">
+                    @if (userGroups != null && userGroups.Any())
+                    {
+                        @foreach (var group in userGroups)
+                        {
+                            <div class="card mb-3 shadow-sm border-success">
+                                @if (!string.IsNullOrEmpty(group.ImagePath))
+                                {
+                                    <img src="@group.ImagePath" class="card-img-top" alt="@group.Name" style="height: 150px; object-fit: cover;">
+                                }
+                                else
+                                {
+                                    <div class="card-img-top bg-success bg-gradient d-flex align-items-center justify-content-center" style="height: 150px;">
+                                        <i class="bi bi-people-fill text-white" style="font-size: 3rem;"></i>
+                                    </div>
+                                }
+                                <div class="card-body">
+                                    <h5 class="card-title">@group.Name</h5>
+                                    <p class="card-text text-muted small">@group.Description</p>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <small class="text-muted">
+                                            <i class="bi bi-person-badge me-1"></i>
+                                            @group.Moderator?.FullName
+                                        </small>
+                                        <span class="badge bg-success">
+                                            @group.Members.Count membri
+                                        </span>
+                                    </div>
+                                    <a asp-action="Show" asp-route-id="@group.Id" class="btn btn-success w-100">
+                                        <i class="bi bi-box-arrow-in-right me-1"></i> Intră în Grup
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <h5 class="mt-3">Nu faci parte din niciun grup</h5>
+                            <p class="text-muted">Alătură-te unui grup din lista disponibilă!</p>
+                            <a asp-action="Create" class="btn btn-primary mt-3">
+                                <i class="bi bi-plus-circle me-1"></i> Creează un Grup
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

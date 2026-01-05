@@ -1,0 +1,55 @@
+@model SportsAPP.Models.Group
+
+@{
+    ViewData["Title"] = "Creează Grup";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">
+                        <i class="bi bi-people-fill me-2"></i>Creează Grup Nou
+                    </h3>
+
+                    <form asp-action="Create" asp-controller="Groups" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Nume Grup *</label>
+                            <input asp-for="Name" class="form-control" placeholder="Ex: Fani Fotbal" required />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Descriere *</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Descrie scopul grupului..." required></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="imageFile" class="form-label">Imagine Grup (opțional)</label>
+                            <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*" />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle me-1"></i> Creează Grup
+                            </button>
+                            <a asp-action="Index" asp-controller="Groups" class="btn btn-outline-secondary">
+                                Anulează
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

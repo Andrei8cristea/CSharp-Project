@@ -38,8 +38,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="ProfileDescription" class="form-label">Descriere Profil</label>
-                            <textarea class="form-control" id="ProfileDescription" name="ProfileDescription" rows="4" placeholder="Spune-ne ceva despre tine...">@Model.ProfileDescription</textarea>
+                            <label for="ProfileDescription" class="form-label">Descriere Profil <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="ProfileDescription" name="ProfileDescription" rows="4" placeholder="Spune-ne ceva despre tine..." required>@Model.ProfileDescription</textarea>
+                            <span class="text-danger" id="profileDescriptionError"></span>
                             <small class="form-text text-muted">Maximum 500 caractere</small>
                         </div>
 
@@ -47,13 +48,13 @@
                             <label class="form-label">Vizibilitate Profil</label>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="IsPublic" id="publicProfile" value="true" @(Model.IsPublic ? "checked" : "") />
-                                <label class="form-check-label" for="publicProfile">
+                                <label class="form-check-label text-primary" for="publicProfile">
                                     <i class="bi bi-unlock"></i> Public (toată lumea poate vedea postările tale)
                                 </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="IsPublic" id="privateProfile" value="false" @(!Model.IsPublic ? "checked" : "") />
-                                <label class="form-check-label" for="privateProfile">
+                                <label class="form-check-label text-primary" for="privateProfile">
                                     <i class="bi bi-lock"></i> Privat (doar informațiile de bază sunt vizibile)
                                 </label>
                             </div>
@@ -73,10 +74,18 @@
                         <div class="mb-3">
                             <label for="profileImage" class="form-label">
                                 @(string.IsNullOrEmpty(Model.ProfileImagePath) ? "Încarcă" : "Schimbă") Imagine Profil
+                                @if (string.IsNullOrEmpty(Model.ProfileImagePath))
+                                {
+                                    <span class="text-danger">*</span>
+                                }
                             </label>
-                            <input type="file" class="form-control" id="profileImage" name="profileImage" accept="image/*" />
+                            <input type="file" class="form-control" id="profileImage" name="profileImage" accept="image/*" @(string.IsNullOrEmpty(Model.ProfileImagePath) ? "required" : "") />
+                            @if (ViewData.ModelState.ContainsKey("profileImage"))
+                            {
+                                <span class="text-danger">@ViewData.ModelState["profileImage"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+                            }
                             <small class="form-text text-muted">
-                                @(string.IsNullOrEmpty(Model.ProfileImagePath) ? "Alege o imagine pentru profilul tău" : "Lasă necompletat dacă vrei să păstrezi imaginea actuală")
+                                @(string.IsNullOrEmpty(Model.ProfileImagePath) ? "Alege o imagine pentru profilul tău (obligatoriu)" : "Lasă necompletat dacă vrei să păstrezi imaginea actuală")
                             </small>
                         </div>
 

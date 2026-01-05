@@ -1,0 +1,81 @@
+@model IEnumerable<SportsAPP.Models.FollowRequest>
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Cereri de Urmărire";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2 class="mb-4">
+                <i class="bi bi-bell"></i> Cereri de Urmărire
+            </h2>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="list-group">
+                    @foreach (var request in Model)
+                    {
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-center">
+                                        @if (!string.IsNullOrEmpty(request.Sender?.ProfileImagePath))
+                                        {
+                                            <img src="@request.Sender.ProfileImagePath" 
+                                                 class="rounded-circle me-3" 
+                                                 style="width: 50px; height: 50px; object-fit: cover;" 
+                                                 alt="@request.Sender.FullName" />
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center text-white me-3" 
+                                                 style="width: 50px; height: 50px;">
+                                                @request.Sender?.FirstName?.Substring(0, 1)@request.Sender?.LastName?.Substring(0, 1)
+                                            </div>
+                                        }
+                                        
+                                        <div>
+                                            <h6 class="mb-0">
+                                                <a href="@Url.Action("Show", "Users", new { id = request.SenderId })" 
+                                                   class="text-decoration-none">
+                                                    @request.Sender?.FullName
+                                                </a>
+                                            </h6>
+                                            <small class="text-muted">
+                                                Trimis @request.RequestedAt.ToString("dd MMM yyyy")
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 text-end">
+                                    <form asp-controller="Follows" asp-action="AcceptRequest" asp-route-requestId="@request.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-check-circle"></i> Acceptă
+                                        </button>
+                                    </form>
+                                    
+                                    <form asp-controller="Follows" asp-action="RejectRequest" asp-route-requestId="@request.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-x-circle"></i> Respinge
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Nu ai cereri de urmărire în așteptare.
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,63 +1,61 @@
 /* ==========================================
-   SPORTSAPP - MODERN DESIGN SYSTEM
+   SPORTSAPP - INSTAGRAM-INSPIRED DESIGN SYSTEM
+   Dark/Light Mode Support
    ========================================== */
 
 /* Google Fonts Import */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap');
 
 /* ==========================================
-   CSS CUSTOM PROPERTIES (Design Tokens)
+   CSS CUSTOM PROPERTIES - LIGHT THEME (DEFAULT)
    ========================================== */
 :root {
-  /* Color Palette - Vibrant & Modern */
-  --primary: #4F46E5;
-  --primary-hover: #4338CA;
-  --primary-light: #6366F1;
-  --secondary: #7C3AED;
-  --accent: #EC4899;
+  /* Light Theme Colors - Instagram Style */
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --bg-tertiary: #f5f5f5;
 
-  /* Soft, Eye-Friendly Green */
-  --success: #34D399;
-  --success-dark: #10B981;
-  --success-light: #6EE7B7;
+  --text-primary: #262626;
+  --text-secondary: #8e8e8e;
+  --text-muted: #c7c7c7;
 
-  --warning: #F59E0B;
-  --danger: #EF4444;
+  --border-color: #dbdbdb;
+  --border-subtle: #efefef;
 
-  /* Neutrals */
-  --dark: #1E293B;
-  --gray-900: #0F172A;
-  --gray-800: #1E293B;
-  --gray-700: #334155;
-  --gray-600: #475569;
-  --gray-500: #64748B;
-  --gray-400: #94A3B8;
-  --gray-300: #CBD5E1;
-  --gray-200: #E2E8F0;
-  --gray-100: #F1F5F9;
-  --light: #F8FAFC;
-  --white: #FFFFFF;
+  --card-bg: #ffffff;
+  --card-hover: #fafafa;
 
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
-  --gradient-success: linear-gradient(135deg, #34D399 0%, #10B981 100%);
-  --gradient-warm: linear-gradient(135deg, #F59E0B 0%, #EC4899 100%);
-  --gradient-purple: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%);
+  --navbar-bg: rgba(255, 255, 255, 0.95);
+  --navbar-blur: blur(10px);
+
+  /* Instagram-inspired Gradient */
+  --accent-gradient: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #6a2c91 0%, #d41818 50%, #d99537 100%);
+
+  /* Primary Colors */
+  --primary: #0095f6;
+  --primary-hover: #0081d8;
+  --primary-light: #e0f1ff;
+
+  --success: #34d399;
+  --success-dark: #10b981;
+  --warning: #f59e0b;
+  --danger: #ed4956;
+  --danger-hover: #c92a36;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.15);
 
   /* Border Radius */
-  --radius-sm: 0.375rem;
-  --radius: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
   /* Spacing */
@@ -79,8 +77,46 @@
 }
 
 /* ==========================================
+   DARK THEME
+   ========================================== */
+[data-theme="dark"] {
+  /* Dark Theme Colors - Instagram Dark Mode Style */
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #1a1a1a;
+
+  --text-primary: #fafafa;
+  --text-secondary: #a8a8a8;
+  --text-muted: #737373;
+
+  --border-color: #262626;
+  --border-subtle: #1a1a1a;
+
+  --card-bg: #000000;
+  --card-hover: #0a0a0a;
+
+  --navbar-bg: rgba(0, 0, 0, 0.95);
+
+  /* Shadows for dark mode */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.7);
+
+  /* Adjust primary for dark mode */
+  --primary-light: #1a3a52;
+}
+
+/* ==========================================
    GLOBAL STYLES
    ========================================== */
+* {
+  transition: background-color var(--transition-base),
+    color var(--transition-base),
+    border-color var(--transition-base);
+}
+
 html {
   font-size: 14px;
   scroll-behavior: smooth;
@@ -94,9 +130,10 @@ html {
 
 body {
   font-family: var(--font-body);
-  color: var(--gray-800);
-  background-color: var(--light);
-  margin-bottom: 0;
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+  margin: 0;
+  padding: 0;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -112,7 +149,8 @@ h6 {
   font-family: var(--font-heading);
   font-weight: 700;
   line-height: 1.2;
-  color: var(--gray-900);
+  color: var(--text-primary);
+  margin-bottom: 1rem;
 }
 
 h1 {
@@ -139,23 +177,108 @@ h6 {
   font-size: 1rem;
 }
 
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
 /* ==========================================
-   ENHANCED BUTTONS
+   NAVBAR - INSTAGRAM STYLE
+   ========================================== */
+.navbar {
+  background: var(--navbar-bg) !important;
+  backdrop-filter: var(--navbar-blur);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.75rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: none;
+}
+
+.navbar-brand {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.5rem;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: transform var(--transition-base);
+}
+
+.navbar-brand:hover {
+  transform: scale(1.02);
+}
+
+.navbar-brand i {
+  -webkit-text-fill-color: initial;
+  background: none;
+  -webkit-background-clip: initial;
+}
+
+.nav-link {
+  font-weight: 500;
+  color: var(--text-primary) !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: var(--radius);
+  transition: all var(--transition-fast);
+  position: relative;
+  font-size: 0.95rem;
+}
+
+.nav-link:hover {
+  color: var(--text-primary) !important;
+  background: var(--bg-tertiary);
+}
+
+.nav-link i {
+  margin-right: 0.25rem;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-left: 0.5rem;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-tertiary);
+  transform: rotate(15deg);
+}
+
+/* ==========================================
+   ENHANCED BUTTONS - INSTAGRAM STYLE
    ========================================== */
 .btn {
   font-weight: 600;
+  font-size: 0.875rem;
   border-radius: var(--radius);
-  padding: 0.625rem 1.25rem;
-  transition: all var(--transition-base);
+  padding: 0.5rem 1rem;
+  transition: all var(--transition-fast);
   border: none;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  cursor: pointer;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .btn:active {
@@ -163,269 +286,440 @@ h6 {
 }
 
 .btn-primary {
-  background: var(--gradient-primary);
+  background: var(--primary);
   color: white;
   border: none;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #4338CA 0%, #6D28D9 100%);
+  background: var(--primary-hover);
   color: white;
 }
 
 .btn-success {
-  background: var(--gradient-success);
+  background: var(--success);
   color: white;
   border: none;
 }
 
 .btn-success:hover {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  background: var(--success-dark);
   color: white;
 }
 
 .btn-warning {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  background: var(--warning);
   color: white;
   border: none;
 }
 
-.btn-warning:hover {
-  background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
-  color: white;
-}
-
 .btn-danger {
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  background: var(--danger);
   color: white;
   border: none;
 }
 
 .btn-danger:hover {
-  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  background: var(--danger-hover);
   color: white;
 }
 
 .btn-outline-primary {
   background: transparent;
   color: var(--primary);
-  border: 2px solid var(--primary);
+  border: 1px solid var(--border-color);
 }
 
 .btn-outline-primary:hover {
-  background: var(--gradient-primary);
+  background: var(--primary);
   color: white;
-  border-color: transparent;
+  border-color: var(--primary);
+}
+
+.btn-outline-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-outline-secondary:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.btn-outline-warning {
+  background: transparent;
+  color: var(--warning);
+  border: 1px solid var(--border-color);
+}
+
+.btn-link {
+  color: var(--primary);
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.btn-link:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
 }
 
 /* ==========================================
-   ENHANCED CARDS
+   CARDS - INSTAGRAM POST STYLE
    ========================================== */
 .card {
-  border: none;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  transition: all var(--transition-base);
-  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  margin-bottom: 1.5rem;
   overflow: hidden;
+  box-shadow: none;
+  transition: all var(--transition-base);
 }
 
 .card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-4px);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-md);
 }
 
 .card-header {
-  background: linear-gradient(to right, var(--light) 0%, white 100%);
-  border-bottom: 1px solid var(--gray-200);
-  padding: 1.25rem;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 1.25rem;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .card-body {
-  padding: 1.5rem;
+  padding: 1.25rem;
+  background: var(--card-bg);
 }
 
 .card-title {
   font-family: var(--font-heading);
   font-weight: 700;
-  color: var(--gray-900);
+  color: var(--text-primary);
   margin-bottom: 0.75rem;
 }
 
+.card-text {
+  color: var(--text-primary);
+}
+
 /* ==========================================
-   ENHANCED FORMS
+   FORMS - MODERN STYLE
    ========================================== */
 .form-control,
 .form-select {
-  border: 2px solid var(--gray-300);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  padding: 0.75rem 1rem;
-  transition: all var(--transition-base);
-  font-size: 0.95rem;
+  padding: 0.625rem 0.875rem;
+  transition: all var(--transition-fast);
+  font-size: 0.875rem;
+  color: var(--text-primary);
 }
 
 .form-control:focus,
 .form-select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  background: var(--bg-primary);
+  border-color: var(--text-secondary);
+  box-shadow: none;
   outline: none;
+  color: var(--text-primary);
+}
+
+.form-control::placeholder {
+  color: var(--text-secondary);
 }
 
 .form-floating>.form-control:focus,
 .form-floating>.form-control:not(:placeholder-shown) {
-  border-color: var(--primary);
+  border-color: var(--text-secondary);
 }
 
 .form-floating>label {
-  color: var(--gray-600);
+  color: var(--text-secondary);
+  font-weight: 400;
+  font-size: 0.875rem;
+}
+
+.form-label {
+  color: var(--text-primary);
   font-weight: 500;
-}
-
-.form-control::placeholder {
-  color: var(--gray-400);
-}
-
-/* ==========================================
-   NAVBAR ENHANCEMENTS
-   ========================================== */
-.navbar {
-  background: white !important;
-  box-shadow: var(--shadow-md);
-  padding: 1rem 0;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.95) !important;
-}
-
-.navbar-brand {
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 1.5rem;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  transition: all var(--transition-base);
-}
-
-.navbar-brand:hover {
-  transform: scale(1.05);
-}
-
-.nav-link {
-  font-weight: 600;
-  color: var(--gray-700) !important;
-  padding: 0.5rem 1rem !important;
-  border-radius: var(--radius);
-  transition: all var(--transition-base);
-  position: relative;
-}
-
-.nav-link:hover {
-  color: var(--primary) !important;
-  background: var(--gray-100);
-}
-
-.nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 1rem;
-  right: 1rem;
-  height: 3px;
-  background: var(--gradient-primary);
-  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
 }
 
 /* ==========================================
    BADGES
    ========================================== */
 .badge {
-  padding: 0.375rem 0.75rem;
+  padding: 0.25rem 0.625rem;
   font-weight: 600;
-  border-radius: var(--radius-full);
-  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
 }
 
 .bg-primary {
-  background: var(--gradient-primary) !important;
+  background: var(--primary) !important;
 }
 
 .bg-success {
-  background: var(--gradient-success) !important;
+  background: var(--success) !important;
 }
 
 .bg-warning {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important;
+  background: var(--warning) !important;
 }
 
 .bg-danger {
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+  background: var(--danger) !important;
+}
+
+.bg-secondary {
+  background: var(--text-secondary) !important;
 }
 
 /* ==========================================
    ALERTS
    ========================================== */
 .alert {
-  border: none;
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
   padding: 1rem 1.25rem;
-  box-shadow: var(--shadow);
-  border-left: 4px solid;
+  margin-bottom: 1rem;
+  background: var(--card-bg);
 }
 
 .alert-success {
-  background: linear-gradient(to right, #D1FAE5 0%, #ffffff 100%);
-  border-left-color: var(--success);
-  color: #065F46;
+  background: var(--card-bg);
+  border-left: 3px solid var(--success);
+  color: var(--text-primary);
 }
 
 .alert-danger {
-  background: linear-gradient(to right, #FEE2E2 0%, #ffffff 100%);
-  border-left-color: var(--danger);
-  color: #991B1B;
+  background: var(--card-bg);
+  border-left: 3px solid var(--danger);
+  color: var(--text-primary);
 }
 
 .alert-info {
-  background: linear-gradient(to right, #DBEAFE 0%, #ffffff 100%);
-  border-left-color: var(--primary);
-  color: #1E40AF;
+  background: var(--card-bg);
+  border-left: 3px solid var(--primary);
+  color: var(--text-primary);
 }
 
 .alert-warning {
-  background: linear-gradient(to right, #FEF3C7 0%, #ffffff 100%);
-  border-left-color: var(--warning);
-  color: #92400E;
+  background: var(--card-bg);
+  border-left: 3px solid var(--warning);
+  color: var(--text-primary);
+}
+
+.alert-dismissible .btn-close {
+  filter: var(--text-primary);
+}
+
+/* ==========================================
+   TWITTER/INSTAGRAM FEED STYLES
+   ========================================== */
+.twitter-feed {
+  max-width: 600px;
+  margin: 0 auto;
+  background: transparent;
+}
+
+.twitter-header {
+  border-bottom: 1px solid var(--border-color);
+  background: transparent;
+  position: relative;
+  z-index: 10;
+  padding: 1.5rem 1.25rem 1rem;
+}
+
+.twitter-header h5 {
+  color: var(--text-primary);
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.tweet-composer {
+  border-bottom: 8px solid var(--bg-secondary);
+  padding: 1rem 1.25rem;
+  background: var(--card-bg);
+}
+
+.tweet {
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.875rem 1rem;
+  transition: background-color var(--transition-fast);
+  background: var(--card-bg);
+}
+
+.tweet:hover {
+  background-color: var(--card-hover);
+}
+
+.tweet-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.tweet-avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tweet-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.tweet-author {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+}
+
+.tweet-author:hover {
+  text-decoration: underline;
+}
+
+.tweet-time {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.tweet-badge {
+  font-size: 0.6875rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.tweet-content {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.tweet-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
+}
+
+.tweet-media {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.tweet-media img,
+.tweet-media video {
+  width: 100%;
+  display: block;
+}
+
+.tweet-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  align-items: center;
+}
+
+.tweet-action {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: var(--radius);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.tweet-action:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.tweet-action.danger:hover {
+  color: var(--danger);
+  background: rgba(237, 73, 86, 0.1);
+}
+
+.tweet-action.warning:hover {
+  color: var(--warning);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.tweet-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
 }
 
 /* ==========================================
    UTILITIES
    ========================================== */
+.text-muted {
+  color: var(--text-secondary) !important;
+}
+
+.text-dark {
+  color: var(--text-primary) !important;
+}
+
+.text-white {
+  color: #ffffff !important;
+}
+
+.bg-white {
+  background-color: var(--bg-primary) !important;
+}
+
+.bg-light {
+  background-color: var(--bg-secondary) !important;
+}
+
+.border-bottom {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.box-shadow {
+  box-shadow: var(--shadow-md);
+}
+
 .gradient-text {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.gradient-bg {
-  background: var(--gradient-primary);
-}
-
-.hover-lift {
-  transition: transform var(--transition-base);
-}
-
-.hover-lift:hover {
-  transform: translateY(-4px);
-}
-
-.smooth-shadow {
-  box-shadow: var(--shadow-lg);
-}
-
-.text-gradient-primary {
-  background: var(--gradient-primary);
+  background: var(--accent-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -437,7 +731,7 @@ h6 {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
 
   to {
@@ -449,7 +743,7 @@ h6 {
 @keyframes slideInLeft {
   from {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateX(-20px);
   }
 
   to {
@@ -459,51 +753,57 @@ h6 {
 }
 
 .fade-in {
-  animation: fadeIn 0.6s ease-out;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .slide-in-left {
-  animation: slideInLeft 0.6s ease-out;
+  animation: slideInLeft 0.4s ease-out;
 }
 
 /* Stagger animation for lists */
 .stagger-item {
-  animation: fadeIn 0.6s ease-out backwards;
+  animation: fadeIn 0.4s ease-out backwards;
 }
 
 .stagger-item:nth-child(1) {
-  animation-delay: 0.1s;
+  animation-delay: 0.05s;
 }
 
 .stagger-item:nth-child(2) {
-  animation-delay: 0.2s;
+  animation-delay: 0.1s;
 }
 
 .stagger-item:nth-child(3) {
-  animation-delay: 0.3s;
+  animation-delay: 0.15s;
 }
 
 .stagger-item:nth-child(4) {
-  animation-delay: 0.4s;
+  animation-delay: 0.2s;
 }
 
 .stagger-item:nth-child(5) {
-  animation-delay: 0.5s;
+  animation-delay: 0.25s;
 }
 
 /* ==========================================
-   FOOTER
+   CUSTOM SCROLLBAR
    ========================================== */
-.footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  background: white;
-  padding: 1.5rem 0;
-  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
 }
 
 /* ==========================================
@@ -524,11 +824,18 @@ h6 {
 
   .card {
     margin-bottom: 1rem;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
   }
 
   .btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+  }
+
+  .tweet {
+    padding: 0.75rem 0.875rem;
   }
 }
 
@@ -537,30 +844,141 @@ h6 {
    ========================================== */
 .btn:focus,
 .btn:active:focus,
-.btn-link.nav-link:focus,
 .form-control:focus,
 .form-check-input:focus {
-  box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+  box-shadow: 0 0 0 3px rgba(0, 149, 246, 0.2);
   outline: none;
 }
 
+[data-theme="dark"] .btn:focus,
+[data-theme="dark"] .btn:active:focus,
+[data-theme="dark"] .form-control:focus {
+  box-shadow: 0 0 0 3px rgba(0, 149, 246, 0.3);
+}
+
 /* ==========================================
-   CUSTOM SCROLLBAR
+   CONTAINER ADJUSTMENTS
    ========================================== */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+.container {
+  background: transparent;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--gray-100);
+main {
+  min-height: calc(100vh - 200px);
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--gradient-primary);
-  border-radius: var(--radius-full);
+/* ==========================================
+   PROFILE PAGE STYLES
+   ========================================== */
+.post-grid-item {
+  overflow: hidden;
+  transition: transform var(--transition-base);
+  border-radius: var(--radius-sm);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-hover);
+.post-grid-item:hover {
+  transform: scale(1.02);
+  z-index: 1;
+}
+
+.post-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 100%);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  color: #ffffff !important;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.post-overlay * {
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.post-overlay .post-stats {
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.post-grid-item:hover .post-overlay {
+  opacity: 1;
+}
+
+/* ==========================================
+   ADDITIONAL INSTAGRAM-STYLE ELEMENTS
+   ========================================== */
+.rounded-circle {
+  border-radius: 50% !important;
+}
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+.shadow-sm {
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.shadow {
+  box-shadow: var(--shadow) !important;
+}
+
+.shadow-lg {
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* Bootstrap overrides for theme compatibility */
+.navbar-light .navbar-toggler {
+  border-color: var(--border-color);
+}
+
+.navbar-light .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(38, 38, 38, 0.75)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+[data-theme="dark"] .navbar-light .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(250, 250, 250, 0.75)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.btn-close {
+  filter: invert(0);
+}
+
+[data-theme="dark"] .btn-close {
+  filter: invert(1);
+}
+
+/* Additional cleanup improvements */
+.text-gradient-primary {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Better spacing for stats */
+.d-flex.gap-4 {
+  gap: 1.5rem !important;
+}
+
+/* Cleaner profile images */
+.rounded-circle {
+  border: 2px solid var(--border-color);
+}
+
+/* Better button group styling */
+.btn-group .btn {
+  border-color: var(--border-color);
+}
+
+.btn-group .btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
 }

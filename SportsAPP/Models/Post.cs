@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SportsAPP.Models
 {
@@ -40,5 +41,12 @@ namespace SportsAPP.Models
 
         // Un post poate avea mai multe comentarii
         public virtual ICollection<Comment> Comments { get; set; } = [];
+
+        // Un post poate avea mai multe like-uri
+        public virtual ICollection<Like> Likes { get; set; } = [];
+
+        // Proprietate calculata pentru numarul de like-uri
+        [NotMapped]
+        public int LikesCount => Likes?.Count ?? 0;
     }
 }

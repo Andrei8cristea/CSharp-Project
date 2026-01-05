@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\andre\\Desktop\\DAW\\PROIECT\\CSharp-Project-master\\SportsAPP\\SportsAPP.csproj": {}
+    "C:\\Users\\Razvan\\Documents\\INCERCARE\\CSharp-Project-master-alpha\\CSharp-Project-master-alpha\\CSharp-Project-master\\SportsAPP\\SportsAPP.csproj": {}
   },
   "projects": {
-    "C:\\Users\\andre\\Desktop\\DAW\\PROIECT\\CSharp-Project-master\\SportsAPP\\SportsAPP.csproj": {
+    "C:\\Users\\Razvan\\Documents\\INCERCARE\\CSharp-Project-master-alpha\\CSharp-Project-master-alpha\\CSharp-Project-master\\SportsAPP\\SportsAPP.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\andre\\Desktop\\DAW\\PROIECT\\CSharp-Project-master\\SportsAPP\\SportsAPP.csproj",
+        "projectUniqueName": "C:\\Users\\Razvan\\Documents\\INCERCARE\\CSharp-Project-master-alpha\\CSharp-Project-master-alpha\\CSharp-Project-master\\SportsAPP\\SportsAPP.csproj",
         "projectName": "SportsAPP",
-        "projectPath": "C:\\Users\\andre\\Desktop\\DAW\\PROIECT\\CSharp-Project-master\\SportsAPP\\SportsAPP.csproj",
-        "packagesPath": "C:\\Users\\andre\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\andre\\Desktop\\DAW\\PROIECT\\CSharp-Project-master\\SportsAPP\\obj\\",
+        "projectPath": "C:\\Users\\Razvan\\Documents\\INCERCARE\\CSharp-Project-master-alpha\\CSharp-Project-master-alpha\\CSharp-Project-master\\SportsAPP\\SportsAPP.csproj",
+        "packagesPath": "C:\\Users\\Razvan\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Razvan\\Documents\\INCERCARE\\CSharp-Project-master-alpha\\CSharp-Project-master-alpha\\CSharp-Project-master\\SportsAPP\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\andre\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Razvan\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -102,7 +102,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
