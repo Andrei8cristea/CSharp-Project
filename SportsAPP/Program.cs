@@ -8,8 +8,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+// Support both SQL Server (local) and PostgreSQL (production)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+{
+    // Detect database provider based on connection string
+    if (connectionString.Contains("postgres", StringComparison.OrdinalIgnoreCase) || 
+        connectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase))
+    {
+        // PostgreSQL for production (Render)
+        options.UseNpgsql(connectionString);
+    }
+    else
+    {
+        // SQL Server for local development
+        options.UseSqlServer(connectionString);
+    }
+});
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Configure Identity with ApplicationUser and Roles
@@ -29,11 +44,27 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Seed data - initialize roles and users
+// Seed data and apply migrations
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    SeedData.Initialize(services);
+    try
+    {
+        // Apply migrations automatically in production (Render)
+        if (!app.Environment.IsDevelopment())
+        {
+            var context = services.GetRequiredService<ApplicationDbContext>();
+            context.Database.Migrate();
+        }
+        
+        // Initialize roles and seed data
+        SeedData.Initialize(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+    }
 }
 
 // Configure the HTTP request pipeline.
@@ -48,7 +79,12 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// HTTPS redirection - disabled in production (Render handles SSL termination)
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseRouting();
 
 app.UseAuthorization();

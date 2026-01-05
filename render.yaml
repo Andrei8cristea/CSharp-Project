@@ -1,0 +1,36 @@
+services:
+  # Web Service - ASP.NET Core Application
+  - type: web
+    name: sportsapp
+    runtime: docker
+    repo: https://github.com/Andrei8cristea/CSharp-Project.git
+    branch: andrei2
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: sportsapp-db
+          property: connectionString
+      - key: GroqApi__ApiKey
+        sync: false  # User will set this manually in Render dashboard
+      - key: GroqApi__Model
+        value: llama-3.1-8b-instant
+      - key: GroqApi__Enabled
+        value: true
+      - key: RateLimiting__PostsPerHour
+        value: 10
+      - key: RateLimiting__CommentsPerHour
+        value: 30
+      - key: RateLimiting__Enabled
+        value: true
+    healthCheckPath: /
+    autoDeploy: true
+
+databases:
+  # PostgreSQL Database
+  - name: sportsapp-db
+    databaseName: sportsapp
+    user: sportsapp
+    plan: free

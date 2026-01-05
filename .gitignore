@@ -36,7 +36,7 @@ _ReSharper*/
 
 # User secrets and sensitive configuration
 **/appsettings.Development.json
-**/appsettings.Production.json
+# **/appsettings.Production.json  # Allowed for deployment template (uses env vars)
 secrets.json
 *.secret
 
